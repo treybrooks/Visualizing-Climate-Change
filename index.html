@@ -85,7 +85,7 @@ async function onLoad(){
   var parseTime = d3.timeParse("%Y%m");
   var formatTime = d3.timeFormat("%Y/%m");
 
-  var data = await d3.csv("/data/all_data.csv").then(function(data){
+  var data = await d3.csv("data/all_data.csv").then(function(data){
     // console.log(data);
     return data;
   }).catch(function(){
