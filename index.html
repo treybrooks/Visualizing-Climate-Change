@@ -9,6 +9,17 @@
   stroke-width: 2px;
 }
 
+.templine {
+  fill: none;
+  stroke: red;
+  stroke-width: 2px;
+}
+.ecline {
+  fill: none;
+  stroke: green;
+  stroke-width: 2px;
+}
+
 .axisSteelBlue text{
   fill: steelblue;
 }
@@ -67,113 +78,179 @@ div.tooltip {
     
     <div class="row">
       <div class="column left">
-        <button type="button" class="btn btn-primary btn-block">CO2 Concentration</button><br>
-        <button type="button" class="btn btn-primary btn-block">US Average Temperature</button><br>
-        <button type="button" class="btn btn-primary btn-block">US Average Precipitation</button>
+        <button type="button" id="co2_btn" class="btn btn-primary btn-block">CO2 Concentration (ppm)</button><br>
+        <button type="button" id="temp_btn" class="btn btn-primary btn-block">Global Avg Temp (C)</button><br>
+        <button type="button" id="ec_btn" class="btn btn-primary btn-block">Global Energy Consumption</button>
       </div>
       <div class="column right">
-        <svg></svg>
+        <svg id='chart'></svg>
       </div>
 <script>
-async function onLoad(){
-  // set the dimensions and margins of the graph
-  var margin = {top: 10, right: 40, bottom: 30, left: 50},
-      width  = 960 - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
+  async function onLoad(){
+    // set the dimensions and margins of the graph
+    var margin = {top: 10, right: 40, bottom: 30, left: 50},
+        width  = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
 
-  // parse the date / time
-  var parseTime = d3.timeParse("%Y%m");
-  var formatTime = d3.timeFormat("%Y/%m");
+    // parse the date / time
+    var parseTime = d3.timeParse("%Y%m");
+    var formatTime = d3.timeFormat("%Y/%m");
 
-  var data = await d3.csv("data/all_data.csv").then(function(data){
-    // console.log(data);
-    return data;
-  }).catch(function(){
-    console.log("error loading file")
-  });
+    var data = await d3.csv("data/all_data.csv").then(function(data){
+      console.log(data);
+      return data;
+    }).catch(function(){
+      console.log("error loading file")
+    });
 
-  // axis
-  var xScale  = d3.scaleTime()
-            .domain([
-              d3.min(data, function(d){return parseTime(d.YearMonth);}), 
-              d3.max(data, function(d){return parseTime(d.YearMonth);})
-            ])
-            .range([0,width]);
-  var y_pcpScale  = d3.scaleBand()
-            .domain([0,5.5])
-            .range([height,0]);
-  var y_tavgScale  = d3.scaleBand()
-            .domain([0,80])
-            .range([height,0]);
-  var y_co2Scale  = d3.scaleLinear()
-            .domain([310,420])
-            .range([height,0]);
-  const marker = d3.line().x(d => xScale(parseTime(d.YearMonth))); //.y(d => y(d.population));
+    // mark tooltop and intersection line
+    var tooltip = d3.select("body").append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
 
-  var pcp_line = d3.line()
-      .x(function(d) { return xScale(parseTime(d.YearMonth)); }) // set the x values for the line generator
-      .y(function(d) { return y_pcpScale(d.PCP); }) // set the y values for the line generator 
-      .curve(d3.curveMonotoneX); // apply smoothing to the line
+    var svg = d3.select('svg')
+      .attr('width', width+margin.left+margin.right)
+      .attr('height', height+margin.top+margin.bottom)
+      .append('g')
+        .attr('transform', 'translate('+margin.left+','+margin.top+')');
 
-  var tavg_line = d3.line()
-      .x(function(d) { return xScale(parseTime(d.YearMonth)); }) // set the x values for the line generator
-      .y(function(d) { return y_tavgScale(d.TAVG); }) // set the y values for the line generator 
-      .curve(d3.curveMonotoneX); // apply smoothing to the line
+    var xScale  = d3.scaleLinear()
+              .domain(['1965', '2018'])
+              .range([0,width]);
+    
+    var y_co2Scale  = d3.scaleLinear()
+              .domain([310,420])
+              .range([height,0]);
+    var co2_line = d3.line()
+              .x(function(d) { return xScale(d.Year); }) // set the x values for the line generator
+              .y(function(d) { return y_co2Scale(d.CO2); }) // set the y values for the line generator 
+              .curve(d3.curveMonotoneX); // apply smoothing to the line
+    
+    var y_tempScale  = d3.scaleLinear()
+              .domain([-0.2,1.1])
+              .range([height,0]);
+    var temp_line = d3.line()
+              .x(function(d) { return xScale(d.Year); }) // set the x values for the line generator
+              .y(function(d) { return y_tempScale(d.MeanTemp); }) // set the y values for the line generator 
+              .curve(d3.curveMonotoneX); // apply smoothing to the line
+    
+    var y_ecScale  = d3.scaleLinear()
+              .domain([3500,14000])
+              .range([height,0]);
+    var ec_line = d3.line()
+              .x(function(d) { return xScale(d.Year); }) // set the x values for the line generator
+              .y(function(d) { return y_ecScale(d.EnergyConsump); }) // set the y values for the line generator 
+              .curve(d3.curveMonotoneX); // apply smoothing to the line
 
-  var co2_line = d3.line()
-      .x(function(d) { return xScale(parseTime(d.YearMonth)); }) // set the x values for the line generator
-      .y(function(d) { return y_co2Scale(d.CO2_average); }) // set the y values for the line generator 
-      .curve(d3.curveMonotoneX); // apply smoothing to the line
+    svg.append('g')
+      .attr('transform', 'translate('+0+','+(height+margin.top)+')')
+      .attr("class", "x axis")
+      .call(d3.axisBottom(xScale));
 
-  // mark tooltop and intersection line
-  var tooltip = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
-  const tooltipLine = d3.select("body").append('line');
+    d3.select('#co2_btn').on('click', function(){
+      d3.select('.co2line').remove();
+      svg.append('g')
+        .attr('transform', 'translate('+0+','+margin.top+')')
+        .attr("class", "y axis")
+        .call(d3.axisLeft(y_co2Scale));
+      svg.append('path')
+          .data([data])
+          .attr('class', 'co2line')
+          .attr('d', co2_line);
 
-  var svg = d3.select('svg')
-    .attr('width', width+margin.left+margin.right)
-    .attr('height', height+margin.top+margin.bottom)
-    .append('g')
-      .attr('transform', 'translate('+margin.left+','+margin.top+')');
+      svg.selectAll("dot")	
+          .data(data)			
+      .enter().append("circle")								
+          .attr("r", 5)		
+          .attr("cx", function(d) { return xScale(d.Year); })		 
+          .attr("cy", function(d) { return y_co2Scale(d.CO2); })
+          .attr("fill", "steelblue")
+          .on("mouseover", function(d) {		
+                tooltip.transition()		
+                  .duration(200)		
+                  .style("opacity", .9);		
+                tooltip.html("Year: "+d.Year + "<br/>CO2: "  + d.CO2 + " ppm")	
+                  .style("left", (d3.event.pageX) + "px")		
+                  .style("top", (d3.event.pageY - 28) + "px");	
+              })					
+          .on("mouseout", function(d) {		
+                tooltip.transition()		
+                  .duration(500)		
+                  .style("opacity", 0);	
+          });
+    });
 
-  // insert X axis
-  svg.append('g')
-    .attr('transform', 'translate('+0+','+(height+margin.top)+')')
-    .attr("class", "x axis")
-    .call(d3.axisBottom(xScale));
+    d3.select('#temp_btn').on('click', function(){
+      d3.select('.templine').remove();
+      svg.append('g')
+        .attr('transform', 'translate('+width+','+margin.top+')')
+        .attr("class", "y2 axis")
+        .call(d3.axisRight(y_tempScale));
+      svg.append('path')
+          .data([data])
+          .attr('class', 'templine')
+          .attr('d', temp_line);
 
-  // insert CO2 axis
-  svg.append('g')
-    .attr('transform', 'translate('+0+','+margin.top+')')
-    .attr("class", "y axis")
-    .call(d3.axisLeft(y_co2Scale));
+      svg.selectAll("dot")	
+      .data(data)			
+      .enter().append("circle")								
+          .attr("r", 5)		
+          .attr("cx", function(d) { return xScale(d.Year); })		 
+          .attr("cy", function(d) { return y_tempScale(d.MeanTemp); })
+          .attr("fill", "red")
+          .on("mouseover", function(d) {		
+                tooltip.transition()		
+                  .duration(200)		
+                  .style("opacity", .9);		
+                tooltip.html("Year: "+d.Year + "<br/>Global Avg Temp: "  + d.MeanTemp + " C")	
+                  .style("left", (d3.event.pageX) + "px")		
+                  .style("top", (d3.event.pageY - 28) + "px");	
+              })					
+          .on("mouseout", function(d) {		
+                tooltip.transition()		
+                  .duration(500)		
+                  .style("opacity", 0);	
+          });
 
-  svg.append('path')
-      .data([data])
-      .attr('class', 'co2line')
-      .attr('d', co2_line);
+    });
 
-  svg.selectAll("dot")	
-        .data(data)			
-    .enter().append("circle")								
-        .attr("r", 2)		
-        .attr("cx", function(d) { return xScale(parseTime(d.YearMonth)); })		 
-        .attr("cy", function(d) { return y_co2Scale(d.CO2_average); })
-        .attr("fill", "steelblue")
-        .on("mouseover", function(d) {		
-              tooltip.transition()		
-                .duration(200)		
-                .style("opacity", .9);		
-              tooltip.html("YearMonth: "+formatTime(parseTime(d.YearMonth)) + "<br/>CO2: "  + d.CO2_average + " ppm")	
-                .style("left", (d3.event.pageX) + "px")		
-                .style("top", (d3.event.pageY - 28) + "px");	
-            })					
-        .on("mouseout", function(d) {		
-              tooltip.transition()		
-                .duration(500)		
-                .style("opacity", 0);	
-        });
-}
+    d3.select('#ec_btn').on('click', function(){
+      d3.select('.ecline').remove();
+      svg.append('g')
+        .attr('transform', 'translate('+width+','+margin.top+')')
+        .attr("class", "y3 axis")
+        .call(d3.axisLeft(y_ecScale));
+      svg.append('path')
+          .data([data])
+          .attr('class', 'ecline')
+          .attr('d', ec_line);
+
+      svg.selectAll("dot")	
+      .data(data)			
+      .enter().append("circle")								
+          .attr("r", 5)		
+          .attr("cx", function(d) { return xScale(d.Year); })		 
+          .attr("cy", function(d) { return y_ecScale(d.EnergyConsump); })
+          .attr("fill", "green")
+          .on("mouseover", function(d) {		
+                tooltip.transition()		
+                  .duration(200)		
+                  .style("opacity", .9);		
+                tooltip.html("Year: "+d.Year + "<br/>Energy Consumption: "  + d.EnergyConsump + " C")	
+                  .style("left", (d3.event.pageX) + "px")		
+                  .style("top", (d3.event.pageY - 28) + "px");	
+              })					
+          .on("mouseout", function(d) {		
+                tooltip.transition()		
+                  .duration(500)		
+                  .style("opacity", 0);	
+          });
+    });
+    
+
+
+  };
+
+
 </script>
 </body>
