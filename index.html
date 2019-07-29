@@ -86,15 +86,23 @@ div.tooltip {
         <svg id='chart'></svg>
       </div>
 <script>
-  async function onLoad(){
-    // set the dimensions and margins of the graph
-    var margin = {top: 10, right: 40, bottom: 30, left: 50},
+  var margin = {top: 10, right: 40, bottom: 30, left: 50},
         width  = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
-
-    // parse the date / time
-    var parseTime = d3.timeParse("%Y%m");
-    var formatTime = d3.timeFormat("%Y/%m");
+  
+  var svg = d3.select('svg')
+      .attr('width', width+margin.left+margin.right)
+      .attr('height', height+margin.top+margin.bottom)
+      .append('g')
+        .attr('transform', 'translate('+margin.left+','+margin.top+')');
+  var xScale  = d3.scaleLinear()
+        .domain(['1965', '2018'])
+        .range([0,width]);
+        
+  const tooltip = d3.select('#tooltip');
+  const tooltipLine = svg.append('line');
+  
+  async function onLoad(){
 
     var data = await d3.csv("data/all_data.csv").then(function(data){
       console.log(data);
@@ -102,22 +110,17 @@ div.tooltip {
     }).catch(function(){
       console.log("error loading file")
     });
+    // // mark tooltop and intersection line
+    // var tooltip = d3.select("body").append("div")
+    //   .attr("class", "tooltip")
+    //   .style("opacity", 0);
 
-    // mark tooltop and intersection line
-    var tooltip = d3.select("body").append("div")
-      .attr("class", "tooltip")
-      .style("opacity", 0);
+    // var svg = d3.select('svg')
+    //   .attr('width', width+margin.left+margin.right)
+    //   .attr('height', height+margin.top+margin.bottom)
+    //   .append('g')
+    //     .attr('transform', 'translate('+margin.left+','+margin.top+')');
 
-    var svg = d3.select('svg')
-      .attr('width', width+margin.left+margin.right)
-      .attr('height', height+margin.top+margin.bottom)
-      .append('g')
-        .attr('transform', 'translate('+margin.left+','+margin.top+')');
-
-    var xScale  = d3.scaleLinear()
-              .domain(['1965', '2018'])
-              .range([0,width]);
-    
     var y_co2Scale  = d3.scaleLinear()
               .domain([310,420])
               .range([height,0]);
@@ -239,18 +242,57 @@ div.tooltip {
                 tooltip.html("Year: "+d.Year + "<br/>Energy Consumption: "  + d.EnergyConsump + " C")	
                   .style("left", (d3.event.pageX) + "px")		
                   .style("top", (d3.event.pageY - 28) + "px");	
-              })					
+              })
           .on("mouseout", function(d) {		
                 tooltip.transition()		
                   .duration(500)		
                   .style("opacity", 0);	
           });
     });
-    
 
+    tipBox = svg.append('rect')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('opacity', .1)
+      .on('mousemove', drawTooltip)
+      .on('mouseout', removeTooltip);
+
+      function removeTooltip() {
+        if (tooltip) tooltip.style('display', 'none');
+        if (tooltipLine) tooltipLine.attr('stroke', 'none');
+      }
+
+  function drawTooltip() {
+    const year = Math.floor((xScale.invert(d3.mouse(tipBox.node())[0])));
+    console.log(year, d3.mouse(tipBox.node())[0]);
+
+    tooltipLine.attr('stroke', 'black')
+      .attr('x1', xScale(year))
+      .attr('x2', xScale(year))
+      .attr('y1', 0)
+      .attr('y2', height);
+    
+    tooltip.html(year)
+      .style('display', 'block')
+      .style('left', d3.event.pageX + 20)
+      .style('top', d3.event.pageY - 20)
+      .selectAll()
+      .data(data).enter()
+      .append('div')
+      .html(
+        function(d){
+          return
+          "Year: "+d.Year +
+          "<br/>CO2 Concentration: "  + d.CO2 +
+          "<br/>Global Average Temp: "  + d.MeanTemp +
+          "<br/>Energy Consumption: "  + d.EnergyConsump + " C"
+        });
 
   };
+  }
 
-
+svg.append('text').html('Energy Consumption\'s Effect on Global Climate')
+  .attr('x', 200)
+  .attr('y', 10);
 </script>
 </body>
