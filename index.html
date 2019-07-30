@@ -57,6 +57,16 @@
   display: table;
   clear: both;
 }
+#annotation{
+  position: absolute;
+  background-color:lightgray;
+  padding:5px; 
+  left: 380px; 
+  top: 100px;
+  display:block;
+  width: 300px;
+}
+
 </style>
 <body onload="onLoad()">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -73,11 +83,11 @@
             <button type="button" id="ec_btn" class="btn btn-success btn-block">(1) Global Energy Consumption</button>
             <button type="button" id="co2_btn" class="btn btn-primary btn-block">(2) CO2 Concentration (ppm)</button>
             <button type="button" id="temp_btn" class="btn btn-danger btn-block">(3) Global Avg Temp (C)</button>
-          </div>
+          </div><br>
           <div class="inner-row">
             <div id="sources">
               Source Data:<br>
-              <a href="https://www.bp.com/en/global/corporate/energy-economics/statistical-review-of-world-energy.html">Energy Consumption Source</a><br>
+              <a href="https://www.bp.com/en/global/corporate/energy-economics/statistical-review-of-world-energy.html">Energy Consumption</a><br>
               <a href="https://www.esrl.noaa.gov/gmd/ccgg/trends/global.html">CO2 Concentraion</a><br>
               <a href="https://data.giss.nasa.gov/gistemp/graphs_v4/#">Global Average Temp</a>
             </div>
@@ -85,7 +95,8 @@
       </div>
       <div class="column right">
         <svg id='chart' width='960' height='500'></svg>
-        <div id='tooltip' style='position:fixed;background-color:lightgray;padding:5px'></div>
+        <div id='tooltip' style='position: absolute;background-color:lightgray;padding:5px'></div>
+        <span id='annotation'></span>
       </div>
     </div>
 <script>
@@ -105,6 +116,7 @@
   
   const tooltipLine = svg.append('line');
   const tooltip = d3.select('#tooltip');
+  const annotation = d3.select('#annotation');
   
   async function onLoad(){
 
@@ -144,11 +156,15 @@
       .attr("class", "x axis")
       .call(d3.axisBottom(xScale));
 
+    annotation.text('For the love of God learn something from this!')
+
+    const ec_text = "The world population is growing, and so too is the demand on energy. Civilization's demand for more technology and our rate of consumption drive business to produce more energy for the world, but at what cost?"
     d3.select('#ec_btn').on('click', function(){
       if (!d3.select('.ecline').empty()){
           d3.select('.ecline').remove();
           d3.select('.ec_axis').remove();
       } else {
+          update_annotation(ec_text);
           svg.append('g')
             .attr('transform', 'translate('+0+','+margin.top+')')
             .attr("class", "ec_axis")
@@ -160,11 +176,13 @@
       };
     });
 
+    const co2_text = "Since the majority of the world's power is still produced from burning oil, coal, natural gas. All of these release carbon into the atmosphere, primarily in the form of CO2. This CO2 absorbs more solar energy, and insulates the earth."
     d3.select('#co2_btn').on('click', function(){
       if (!d3.select('.co2line').empty()){
           d3.select('.co2line').remove();
           d3.select('.co2_axis').remove();
       } else {
+          update_annotation(co2_text);
           svg.append('g')
             .attr('transform', 'translate('+width+','+margin.top+')')
             .attr("class", "co2_axis")
@@ -176,11 +194,13 @@
       };
     });
 
+    const temp_text = "As you can see, we're totally boned because of it."
     d3.select('#temp_btn').on('click', function(){
       if (!d3.select('.templine').empty()){
         d3.select('.templine').remove();
         d3.select('.temp_axis').remove();
       } else {
+        update_annotation(temp_text);
         svg.append('g')
           .attr('transform', 'translate('+width+','+margin.top+')')
           .attr("class", "temp_axis")
@@ -225,6 +245,12 @@
         .style('top', d3.event.pageY - 20 + "px");
       
     };
+
+    function update_annotation(t){
+      annotation.html(t)
+        .style('display', 'block');
+    };
+    
   }
 </script>
 </body>
