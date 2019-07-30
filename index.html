@@ -54,7 +54,7 @@
   clear: both;
 }
 
-.tooltip {	
+/* .tooltip {	
     position: absolute;			
     text-align: left;			
     /* width: 180px;					 */
@@ -65,7 +65,7 @@
     /* border: 0px;		 */
     /* border-radius: 8px;			 */
     /* pointer-events: none;			 */
-}
+} */
 </style>
 <body onload="onLoad()">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -73,19 +73,19 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <!-- load the d3.js library -->    	
     <script src="https://d3js.org/d3.v5.min.js"></script>
-
+    
     <h1>Climate Correlations to CO2 Concentration in Atmosphere</h1>
     
-    <div class="row">
+    <!-- <div class="row">
       <div class="column left">
         <button type="button" id="co2_btn" class="btn btn-primary btn-block">CO2 Concentration (ppm)</button><br>
         <button type="button" id="temp_btn" class="btn btn-primary btn-block">Global Avg Temp (C)</button><br>
         <button type="button" id="ec_btn" class="btn btn-primary btn-block">Global Energy Consumption</button>
       </div>
-      <div class="column right">
-        <svg id='chart'></svg>
-        <div id='tooltip'></div>
-      </div>
+      <div class="column right"> -->
+        <svg id='chart' width='960' height='500'></svg>
+        <div id='tooltip' style='position:fixed;background-color:lightgray;padding:5px'></div>
+      <!-- </div> -->
 <script>
   var margin = {top: 10, right: 40, bottom: 30, left: 50},
         width  = 960 - margin.left - margin.right,
@@ -261,7 +261,6 @@
             "<br>CO2: "+single_datum.CO2+
             "<br>MeanTemp: "+single_datum.MeanTemp+
             "<br>EnergyConsump: "+single_datum.EnergyConsump;
-      // console.log(text);
 
       tooltipLine.attr('stroke', 'black')
         .attr('x1', xScale(year))
@@ -269,12 +268,11 @@
         .attr('y1', 0)
         .attr('y2', height);
 
-      tooltip
+      tooltip.html(text)
         .style('display', 'block')
-        .style('left', d3.event.pageX + 20)
-        .style('top', d3.event.pageY - 20).html(text);
-        // .style('left', d3.event.pageX + 20)
-        // .style('top', d3.event.pageY - 20);
+        .style('left', d3.event.pageX + 20 + "px")
+        .style('top', d3.event.pageY - 20 + "px");
+      
     };
   }
 
