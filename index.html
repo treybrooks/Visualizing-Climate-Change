@@ -255,31 +255,27 @@ div.tooltip {
 
     function drawTooltip() {
       const year = Math.floor((xScale.invert(d3.mouse(tipBox.node())[0])));
-      console.log(year, d3.mouse(tipBox.node())[0], data.filter(function(d){return d.Year == year;}));
+      var single_datum = data.filter(function(d){return d.Year == year;})[0]
+      var text = single_datum.Year + ': '+
+            "<br>CO2: "+single_datum.CO2+
+            "<br>MeanTemp: "+single_datum.MeanTemp+
+            "<br>EnergyConsump: "+single_datum.EnergyConsump;
+      console.log(text);
 
       tooltipLine.attr('stroke', 'black')
         .attr('x1', xScale(year))
         .attr('x2', xScale(year))
         .attr('y1', 0)
         .attr('y2', height);
-      
-      // tooltip//.html(year)
+
       tooltip
         .style('display', 'block')
         .style('left', d3.event.pageX + 20)
         .style('top', d3.event.pageY - 20)
-        .selectAll()
-        .data(data).enter()
+        .select('div')
+        .data([single_datum]).enter()
           .append('div')
-          .html(data.find(h => h.Year == year).Year);
-          // .html(function(d){
-          //   var text = "<div>"+d.Year + ': '+
-          //   "<br>CO2: "+d.CO2+
-          //   "<br>MeanTemp: "+d.MeanTemp+
-          //   "<br>EnergyConsump: "+d.EnergyConsump+"</div>";
-          //   console.log(text);
-          //   return text;}
-          // );
+          .html(text);
 
     };
   }
