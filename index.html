@@ -145,10 +145,11 @@
     d3.select('#co2_btn').on('click', function(){
       if (!d3.select('.co2line').empty()){
           d3.select('.co2line').remove();
+          d3.select('.co2_axis').remove();
       } else {
           svg.append('g')
             .attr('transform', 'translate('+0+','+margin.top+')')
-            .attr("class", "y axis")
+            .attr("class", "co2_axis")
             .call(d3.axisLeft(y_co2Scale));
           svg.append('path')
               .data([data])
@@ -159,11 +160,12 @@
 
     d3.select('#temp_btn').on('click', function(){
       if (!d3.select('.templine').empty()){
-          d3.select('.templine').remove();
+        d3.select('.templine').remove();
+        d3.select('.temp_axis').remove();
       } else {
         svg.append('g')
           .attr('transform', 'translate('+width+','+margin.top+')')
-          .attr("class", "y2 axis")
+          .attr("class", "temp_axis")
           .call(d3.axisRight(y_tempScale));
         svg.append('path')
             .data([data])
@@ -176,10 +178,11 @@
     d3.select('#ec_btn').on('click', function(){
       if (!d3.select('.ecline').empty()){
           d3.select('.ecline').remove();
+          d3.select('.ec_axis').remove();
       } else {
           svg.append('g')
             .attr('transform', 'translate('+width+','+margin.top+')')
-            .attr("class", "y3 axis")
+            .attr("class", "ec_axis")
             .call(d3.axisLeft(y_ecScale));
           svg.append('path')
               .data([data])
