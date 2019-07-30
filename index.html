@@ -40,11 +40,11 @@
 }
 
 .left {
-  width: 15%;
+  width: 20%;
 }
 
 .right {
-  width: 85%;
+  width: 80%;
 }
 
 /* Clear floats after the columns */
@@ -53,19 +53,6 @@
   display: table;
   clear: both;
 }
-
-/* .tooltip {	
-    position: absolute;			
-    text-align: left;			
-    /* width: 180px;					 */
-    /* height: 50px;					 */
-    padding: 5px;				
-    /* font: 18px sans-serif;		 */
-    background: lightgray;	
-    /* border: 0px;		 */
-    /* border-radius: 8px;			 */
-    /* pointer-events: none;			 */
-} */
 </style>
 <body onload="onLoad()">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -74,13 +61,13 @@
     <!-- load the d3.js library -->    	
     <script src="https://d3js.org/d3.v5.min.js"></script>
     
-    <h1>Climate Correlations to CO2 Concentration in Atmosphere</h1>
+    <h1>Energy Consumption's Effect on Global Climate</h1>
     
     <div class="row">
       <div class="column left">
-        <button type="button" id="co2_btn" class="btn btn-primary btn-block">CO2 Concentration (ppm)</button><br>
-        <button type="button" id="temp_btn" class="btn btn-primary btn-block">Global Avg Temp (C)</button><br>
-        <button type="button" id="ec_btn" class="btn btn-primary btn-block">Global Energy Consumption</button>
+          <button type="button" id="ec_btn" class="btn btn-success btn-block">(1) Global Energy Consumption</button>
+        <button type="button" id="co2_btn" class="btn btn-primary btn-block">(2) CO2 Concentration (ppm)</button>
+        <button type="button" id="temp_btn" class="btn btn-danger btn-block">(3) Global Avg Temp (C)</button>
       </div>
       <div class="column right">
         <svg id='chart' width='960' height='500'></svg>
@@ -106,8 +93,8 @@
   
   async function onLoad(){
 
+    // load data, report if there are errors
     var data = await d3.csv("data/all_data.csv").then(function(data){
-      console.log(data);
       return data;
     }).catch(function(){
       console.log("error loading file")
@@ -142,15 +129,31 @@
       .attr("class", "x axis")
       .call(d3.axisBottom(xScale));
 
+    d3.select('#ec_btn').on('click', function(){
+      if (!d3.select('.ecline').empty()){
+          d3.select('.ecline').remove();
+          d3.select('.ec_axis').remove();
+      } else {
+          svg.append('g')
+            .attr('transform', 'translate('+0+','+margin.top+')')
+            .attr("class", "ec_axis")
+            .call(d3.axisLeft(y_ecScale));
+          svg.append('path')
+              .data([data])
+              .attr('class', 'ecline')
+              .attr('d', ec_line);
+      };
+    });
+
     d3.select('#co2_btn').on('click', function(){
       if (!d3.select('.co2line').empty()){
           d3.select('.co2line').remove();
           d3.select('.co2_axis').remove();
       } else {
           svg.append('g')
-            .attr('transform', 'translate('+0+','+margin.top+')')
+            .attr('transform', 'translate('+width+','+margin.top+')')
             .attr("class", "co2_axis")
-            .call(d3.axisLeft(y_co2Scale));
+            .call(d3.axisRight(y_co2Scale));
           svg.append('path')
               .data([data])
               .attr('class', 'co2line')
@@ -166,29 +169,13 @@
         svg.append('g')
           .attr('transform', 'translate('+width+','+margin.top+')')
           .attr("class", "temp_axis")
-          .call(d3.axisRight(y_tempScale));
+          .call(d3.axisLeft(y_tempScale));
         svg.append('path')
             .data([data])
             .attr('class', 'templine')
             .attr('d', temp_line);
       };
 
-    });
-
-    d3.select('#ec_btn').on('click', function(){
-      if (!d3.select('.ecline').empty()){
-          d3.select('.ecline').remove();
-          d3.select('.ec_axis').remove();
-      } else {
-          svg.append('g')
-            .attr('transform', 'translate('+width+','+margin.top+')')
-            .attr("class", "ec_axis")
-            .call(d3.axisLeft(y_ecScale));
-          svg.append('path')
-              .data([data])
-              .attr('class', 'ecline')
-              .attr('d', ec_line);
-      };
     });
 
     tipBox = svg.append('rect')
@@ -207,9 +194,9 @@
       const year = Math.floor((xScale.invert(d3.mouse(tipBox.node())[0])));
       var single_datum = data.filter(function(d){return d.Year == year;})[0]
       var text = single_datum.Year;
-      if (!d3.select('.co2line').empty()) text += "<br>CO2: "+parseFloat(single_datum.CO2).toFixed(2);
-      if (!d3.select('.templine').empty()) text += "<br>MeanTemp: "+single_datum.MeanTemp;
-      if (!d3.select('.ecline').empty()) text += "<br>EnergyConsump: "+single_datum.EnergyConsump;
+      if (!d3.select('.ecline').empty()) text += "<br><font color='green'>EnergyConsump: "+single_datum.EnergyConsump+"</font>";
+      if (!d3.select('.co2line').empty()) text += "<br><font color='blue'>CO2: "+parseFloat(single_datum.CO2).toFixed(2)+"</font>";
+      if (!d3.select('.templine').empty()) text += "<br><font color='red'>MeanTemp: "+single_datum.MeanTemp+"</font>";
 
       tooltipLine.attr('stroke', 'black')
         .attr('x1', xScale(year))
@@ -224,9 +211,5 @@
       
     };
   }
-
-svg.append('text').html('Energy Consumption\'s Effect on Global Climate')
-  .attr('x', 200)
-  .attr('y', 10);
 </script>
 </body>
