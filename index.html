@@ -143,109 +143,55 @@
       .call(d3.axisBottom(xScale));
 
     d3.select('#co2_btn').on('click', function(){
-      d3.select('.co2line').remove();
-      svg.append('g')
-        .attr('transform', 'translate('+0+','+margin.top+')')
-        .attr("class", "y axis")
-        .call(d3.axisLeft(y_co2Scale));
-      svg.append('path')
-          .data([data])
-          .attr('class', 'co2line')
-          .attr('d', co2_line);
-
-      svg.selectAll("dot")	
-          .data(data)			
-      .enter().append("circle")								
-          .attr("r", 5)		
-          .attr("cx", function(d) { return xScale(d.Year); })		 
-          .attr("cy", function(d) { return y_co2Scale(d.CO2); })
-          .attr("fill", "steelblue")
-          // .on("mouseover", function(d) {		
-          //       tooltip.transition()		
-          //         .duration(200)		
-          //         .style("opacity", .9);		
-          //       tooltip.html("Year: "+d.Year + "<br/>CO2: "  + d.CO2 + " ppm")	
-          //         .style("left", (d3.event.pageX) + "px")		
-          //         .style("top", (d3.event.pageY - 28) + "px");	
-          //     })					
-          // .on("mouseout", function(d) {		
-          //       tooltip.transition()		
-          //         .duration(500)		
-          //         .style("opacity", 0);	
-          // });
+      if (!d3.select('.co2line').empty()){
+          d3.select('.co2line').remove();
+      } else {
+          svg.append('g')
+            .attr('transform', 'translate('+0+','+margin.top+')')
+            .attr("class", "y axis")
+            .call(d3.axisLeft(y_co2Scale));
+          svg.append('path')
+              .data([data])
+              .attr('class', 'co2line')
+              .attr('d', co2_line);
+      };
     });
 
     d3.select('#temp_btn').on('click', function(){
-      d3.select('.templine').remove();
-      svg.append('g')
-        .attr('transform', 'translate('+width+','+margin.top+')')
-        .attr("class", "y2 axis")
-        .call(d3.axisRight(y_tempScale));
-      svg.append('path')
-          .data([data])
-          .attr('class', 'templine')
-          .attr('d', temp_line);
-
-      svg.selectAll("dot")	
-      .data(data)			
-      .enter().append("circle")								
-          .attr("r", 5)		
-          .attr("cx", function(d) { return xScale(d.Year); })		 
-          .attr("cy", function(d) { return y_tempScale(d.MeanTemp); })
-          .attr("fill", "red")
-          // .on("mouseover", function(d) {		
-          //       tooltip.transition()		
-          //         .duration(200)		
-          //         .style("opacity", .9);		
-          //       tooltip.html("Year: "+d.Year + "<br/>Global Avg Temp: "  + d.MeanTemp + " C")	
-          //         .style("left", (d3.event.pageX) + "px")		
-          //         .style("top", (d3.event.pageY - 28) + "px");	
-          //     })					
-          // .on("mouseout", function(d) {		
-          //       tooltip.transition()		
-          //         .duration(500)		
-          //         .style("opacity", 0);	
-          // });
+      if (!d3.select('.templine').empty()){
+          d3.select('.templine').remove();
+      } else {
+        svg.append('g')
+          .attr('transform', 'translate('+width+','+margin.top+')')
+          .attr("class", "y2 axis")
+          .call(d3.axisRight(y_tempScale));
+        svg.append('path')
+            .data([data])
+            .attr('class', 'templine')
+            .attr('d', temp_line);
+      };
 
     });
 
     d3.select('#ec_btn').on('click', function(){
-      d3.select('.ecline').remove();
-      svg.append('g')
-        .attr('transform', 'translate('+width+','+margin.top+')')
-        .attr("class", "y3 axis")
-        .call(d3.axisLeft(y_ecScale));
-      svg.append('path')
-          .data([data])
-          .attr('class', 'ecline')
-          .attr('d', ec_line);
-
-      svg.selectAll("dot")	
-      .data(data)			
-      .enter().append("circle")								
-          .attr("r", 5)		
-          .attr("cx", function(d) { return xScale(d.Year); })		 
-          .attr("cy", function(d) { return y_ecScale(d.EnergyConsump); })
-          .attr("fill", "green")
-          // .on("mouseover", function(d) {		
-          //       tooltip.transition()		
-          //         .duration(200)		
-          //         .style("opacity", .9);		
-          //       tooltip.html("Year: "+d.Year + "<br/>Energy Consumption: "  + d.EnergyConsump + " C")	
-          //         .style("left", (d3.event.pageX) + "px")		
-          //         .style("top", (d3.event.pageY - 28) + "px");	
-          //     })
-          // .on("mouseout", function(d) {		
-          //       tooltip.transition()		
-          //         .duration(500)		
-          //         .style("opacity", 0);	
-          // });
+      if (!d3.select('.ecline').empty()){
+          d3.select('.ecline').remove();
+      } else {
+          svg.append('g')
+            .attr('transform', 'translate('+width+','+margin.top+')')
+            .attr("class", "y3 axis")
+            .call(d3.axisLeft(y_ecScale));
+          svg.append('path')
+              .data([data])
+              .attr('class', 'ecline')
+              .attr('d', ec_line);
+      };
     });
 
     tipBox = svg.append('rect')
       .attr('width', width)
       .attr('height', height)
-      .attr('opacity', .1)
+      .attr('opacity', 0)
       .on('mousemove', drawTooltip)
       .on('mouseout', removeTooltip);
 
