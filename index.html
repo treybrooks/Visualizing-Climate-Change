@@ -32,10 +32,14 @@
   fill: purple;
 }
 
+#sources {
+  background-color: lightgray;
+  opacity: 0.8;
+}
 /* Create two unequal columns that floats next to each other */
 .column {
   float: left;
-  padding: 10px;
+  padding: 20px;
   height: 300px; /* Should be removed. Only for demonstration */
 }
 
@@ -65,14 +69,25 @@
     
     <div class="row">
       <div class="column left">
-          <button type="button" id="ec_btn" class="btn btn-success btn-block">(1) Global Energy Consumption</button>
-        <button type="button" id="co2_btn" class="btn btn-primary btn-block">(2) CO2 Concentration (ppm)</button>
-        <button type="button" id="temp_btn" class="btn btn-danger btn-block">(3) Global Avg Temp (C)</button>
+          <div class="inner-row">
+            <button type="button" id="ec_btn" class="btn btn-success btn-block">(1) Global Energy Consumption</button>
+            <button type="button" id="co2_btn" class="btn btn-primary btn-block">(2) CO2 Concentration (ppm)</button>
+            <button type="button" id="temp_btn" class="btn btn-danger btn-block">(3) Global Avg Temp (C)</button>
+          </div>
+          <div class="inner-row">
+            <div id="sources">
+              Source Data:<br>
+              <a href="https://www.bp.com/en/global/corporate/energy-economics/statistical-review-of-world-energy.html">Energy Consumption Source</a><br>
+              <a href="https://www.esrl.noaa.gov/gmd/ccgg/trends/global.html">CO2 Concentraion</a><br>
+              <a href="https://data.giss.nasa.gov/gistemp/graphs_v4/#">Global Average Temp</a>
+            </div>
+          </div>
       </div>
       <div class="column right">
         <svg id='chart' width='960' height='500'></svg>
         <div id='tooltip' style='position:fixed;background-color:lightgray;padding:5px'></div>
       </div>
+    </div>
 <script>
   var margin = {top: 10, right: 40, bottom: 30, left: 50},
         width  = 960 - margin.left - margin.right,
