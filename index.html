@@ -54,7 +54,7 @@
   clear: both;
 }
 
-div.tooltip {	
+.tooltip {	
     position: absolute;			
     text-align: left;			
     /* width: 180px;					 */
@@ -100,8 +100,9 @@ div.tooltip {
         .domain(['1965', '2018'])
         .range([0,width]);
         
-  const tooltip = d3.select('#tooltip');
+  
   const tooltipLine = svg.append('line');
+  const tooltip = d3.select('#tooltip');
   
   async function onLoad(){
 
@@ -260,7 +261,7 @@ div.tooltip {
             "<br>CO2: "+single_datum.CO2+
             "<br>MeanTemp: "+single_datum.MeanTemp+
             "<br>EnergyConsump: "+single_datum.EnergyConsump;
-      console.log(text);
+      // console.log(text);
 
       tooltipLine.attr('stroke', 'black')
         .attr('x1', xScale(year))
@@ -268,15 +269,12 @@ div.tooltip {
         .attr('y1', 0)
         .attr('y2', height);
 
-      tooltip.html(text)
+      tooltip
         .style('display', 'block')
         .style('left', d3.event.pageX + 20)
-        .style('top', d3.event.pageY - 20)
-        // .select('#tooltip')
-        // .data([single_datum]).enter()
-        //   // .append('div')
-        //   .html(text);
-
+        .style('top', d3.event.pageY - 20).html(text);
+        // .style('left', d3.event.pageX + 20)
+        // .style('top', d3.event.pageY - 20);
     };
   }
 
