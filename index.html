@@ -257,10 +257,10 @@
     function drawTooltip() {
       const year = Math.floor((xScale.invert(d3.mouse(tipBox.node())[0])));
       var single_datum = data.filter(function(d){return d.Year == year;})[0]
-      var text = single_datum.Year + ': '+
-            "<br>CO2: "+single_datum.CO2+
-            "<br>MeanTemp: "+single_datum.MeanTemp+
-            "<br>EnergyConsump: "+single_datum.EnergyConsump;
+      var text = single_datum.Year;
+      if (!d3.select('.co2line').empty()) text += "<br>CO2: "+parseFloat(single_datum.CO2).toFixed(2);
+      if (!d3.select('.templine').empty()) text += "<br>MeanTemp: "+single_datum.MeanTemp;
+      if (!d3.select('.ecline').empty()) text += "<br>EnergyConsump: "+single_datum.EnergyConsump;
 
       tooltipLine.attr('stroke', 'black')
         .attr('x1', xScale(year))
