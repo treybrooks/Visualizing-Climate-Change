@@ -56,15 +56,15 @@
 
 div.tooltip {	
     position: absolute;			
-    text-align: center;			
-    width: 180px;					
-    height: 50px;					
-    padding: 2px;				
-    font: 18px sans-serif;		
-    background: lightsteelblue;	
-    border: 0px;		
-    border-radius: 8px;			
-    pointer-events: none;			
+    text-align: left;			
+    /* width: 180px;					 */
+    /* height: 50px;					 */
+    padding: 5px;				
+    /* font: 18px sans-serif;		 */
+    background: lightgray;	
+    /* border: 0px;		 */
+    /* border-radius: 8px;			 */
+    /* pointer-events: none;			 */
 }
 </style>
 <body onload="onLoad()">
@@ -84,6 +84,7 @@ div.tooltip {
       </div>
       <div class="column right">
         <svg id='chart'></svg>
+        <div id='tooltip'></div>
       </div>
 <script>
   var margin = {top: 10, right: 40, bottom: 30, left: 50},
@@ -110,16 +111,6 @@ div.tooltip {
     }).catch(function(){
       console.log("error loading file")
     });
-    // // mark tooltop and intersection line
-    // var tooltip = d3.select("body").append("div")
-    //   .attr("class", "tooltip")
-    //   .style("opacity", 0);
-
-    // var svg = d3.select('svg')
-    //   .attr('width', width+margin.left+margin.right)
-    //   .attr('height', height+margin.top+margin.bottom)
-    //   .append('g')
-    //     .attr('transform', 'translate('+margin.left+','+margin.top+')');
 
     var y_co2Scale  = d3.scaleLinear()
               .domain([310,420])
@@ -168,19 +159,19 @@ div.tooltip {
           .attr("cx", function(d) { return xScale(d.Year); })		 
           .attr("cy", function(d) { return y_co2Scale(d.CO2); })
           .attr("fill", "steelblue")
-          .on("mouseover", function(d) {		
-                tooltip.transition()		
-                  .duration(200)		
-                  .style("opacity", .9);		
-                tooltip.html("Year: "+d.Year + "<br/>CO2: "  + d.CO2 + " ppm")	
-                  .style("left", (d3.event.pageX) + "px")		
-                  .style("top", (d3.event.pageY - 28) + "px");	
-              })					
-          .on("mouseout", function(d) {		
-                tooltip.transition()		
-                  .duration(500)		
-                  .style("opacity", 0);	
-          });
+          // .on("mouseover", function(d) {		
+          //       tooltip.transition()		
+          //         .duration(200)		
+          //         .style("opacity", .9);		
+          //       tooltip.html("Year: "+d.Year + "<br/>CO2: "  + d.CO2 + " ppm")	
+          //         .style("left", (d3.event.pageX) + "px")		
+          //         .style("top", (d3.event.pageY - 28) + "px");	
+          //     })					
+          // .on("mouseout", function(d) {		
+          //       tooltip.transition()		
+          //         .duration(500)		
+          //         .style("opacity", 0);	
+          // });
     });
 
     d3.select('#temp_btn').on('click', function(){
@@ -201,19 +192,19 @@ div.tooltip {
           .attr("cx", function(d) { return xScale(d.Year); })		 
           .attr("cy", function(d) { return y_tempScale(d.MeanTemp); })
           .attr("fill", "red")
-          .on("mouseover", function(d) {		
-                tooltip.transition()		
-                  .duration(200)		
-                  .style("opacity", .9);		
-                tooltip.html("Year: "+d.Year + "<br/>Global Avg Temp: "  + d.MeanTemp + " C")	
-                  .style("left", (d3.event.pageX) + "px")		
-                  .style("top", (d3.event.pageY - 28) + "px");	
-              })					
-          .on("mouseout", function(d) {		
-                tooltip.transition()		
-                  .duration(500)		
-                  .style("opacity", 0);	
-          });
+          // .on("mouseover", function(d) {		
+          //       tooltip.transition()		
+          //         .duration(200)		
+          //         .style("opacity", .9);		
+          //       tooltip.html("Year: "+d.Year + "<br/>Global Avg Temp: "  + d.MeanTemp + " C")	
+          //         .style("left", (d3.event.pageX) + "px")		
+          //         .style("top", (d3.event.pageY - 28) + "px");	
+          //     })					
+          // .on("mouseout", function(d) {		
+          //       tooltip.transition()		
+          //         .duration(500)		
+          //         .style("opacity", 0);	
+          // });
 
     });
 
@@ -235,19 +226,19 @@ div.tooltip {
           .attr("cx", function(d) { return xScale(d.Year); })		 
           .attr("cy", function(d) { return y_ecScale(d.EnergyConsump); })
           .attr("fill", "green")
-          .on("mouseover", function(d) {		
-                tooltip.transition()		
-                  .duration(200)		
-                  .style("opacity", .9);		
-                tooltip.html("Year: "+d.Year + "<br/>Energy Consumption: "  + d.EnergyConsump + " C")	
-                  .style("left", (d3.event.pageX) + "px")		
-                  .style("top", (d3.event.pageY - 28) + "px");	
-              })
-          .on("mouseout", function(d) {		
-                tooltip.transition()		
-                  .duration(500)		
-                  .style("opacity", 0);	
-          });
+          // .on("mouseover", function(d) {		
+          //       tooltip.transition()		
+          //         .duration(200)		
+          //         .style("opacity", .9);		
+          //       tooltip.html("Year: "+d.Year + "<br/>Energy Consumption: "  + d.EnergyConsump + " C")	
+          //         .style("left", (d3.event.pageX) + "px")		
+          //         .style("top", (d3.event.pageY - 28) + "px");	
+          //     })
+          // .on("mouseout", function(d) {		
+          //       tooltip.transition()		
+          //         .duration(500)		
+          //         .style("opacity", 0);	
+          // });
     });
 
     tipBox = svg.append('rect')
@@ -257,38 +248,40 @@ div.tooltip {
       .on('mousemove', drawTooltip)
       .on('mouseout', removeTooltip);
 
-      function removeTooltip() {
-        if (tooltip) tooltip.style('display', 'none');
-        if (tooltipLine) tooltipLine.attr('stroke', 'none');
-      }
+    function removeTooltip() {
+      if (tooltip) tooltip.style('display', 'none');
+      if (tooltipLine) tooltipLine.attr('stroke', 'none');
+    }
 
-  function drawTooltip() {
-    const year = Math.floor((xScale.invert(d3.mouse(tipBox.node())[0])));
-    console.log(year, d3.mouse(tipBox.node())[0]);
+    function drawTooltip() {
+      const year = Math.floor((xScale.invert(d3.mouse(tipBox.node())[0])));
+      console.log(year, d3.mouse(tipBox.node())[0], data.filter(function(d){return d.Year == year;}));
 
-    tooltipLine.attr('stroke', 'black')
-      .attr('x1', xScale(year))
-      .attr('x2', xScale(year))
-      .attr('y1', 0)
-      .attr('y2', height);
-    
-    tooltip.html(year)
-      .style('display', 'block')
-      .style('left', d3.event.pageX + 20)
-      .style('top', d3.event.pageY - 20)
-      .selectAll()
-      .data(data).enter()
-      .append('div')
-      .html(
-        function(d){
-          return
-          "Year: "+d.Year +
-          "<br/>CO2 Concentration: "  + d.CO2 +
-          "<br/>Global Average Temp: "  + d.MeanTemp +
-          "<br/>Energy Consumption: "  + d.EnergyConsump + " C"
-        });
+      tooltipLine.attr('stroke', 'black')
+        .attr('x1', xScale(year))
+        .attr('x2', xScale(year))
+        .attr('y1', 0)
+        .attr('y2', height);
+      
+      // tooltip//.html(year)
+      tooltip
+        .style('display', 'block')
+        .style('left', d3.event.pageX + 20)
+        .style('top', d3.event.pageY - 20)
+        .selectAll()
+        .data(data).enter()
+          .append('div')
+          .html(data.find(h => h.Year == year).Year);
+          // .html(function(d){
+          //   var text = "<div>"+d.Year + ': '+
+          //   "<br>CO2: "+d.CO2+
+          //   "<br>MeanTemp: "+d.MeanTemp+
+          //   "<br>EnergyConsump: "+d.EnergyConsump+"</div>";
+          //   console.log(text);
+          //   return text;}
+          // );
 
-  };
+    };
   }
 
 svg.append('text').html('Energy Consumption\'s Effect on Global Climate')
