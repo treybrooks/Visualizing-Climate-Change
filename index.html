@@ -156,7 +156,7 @@
       .attr("class", "x axis")
       .call(d3.axisBottom(xScale));
 
-    annotation.text('For the love of God learn something from this!')
+    annotation.text('Please use the ordered buttons to the left to explore our story.')
 
     const ec_text = "The world population is growing, and so too is the demand on energy. Civilization's demand for more technology and our rate of consumption drive business to produce more energy for the world, but at what cost?"
     d3.select('#ec_btn').on('click', function(){
@@ -176,7 +176,7 @@
       };
     });
 
-    const co2_text = "Since the majority of the world's power is still produced from burning oil, coal, natural gas. All of these release carbon into the atmosphere, primarily in the form of CO2. This CO2 absorbs more solar energy, and insulates the earth."
+    const co2_text = "Most of the world's power is still produced from burning oil, coal, natural gas. Each of these release carbon into the atmosphere in the form of carbon dioxide (CO2) and other greenhouse gases. This CO2 absorbs more solar energy and insulates the earth."
     d3.select('#co2_btn').on('click', function(){
       if (!d3.select('.co2line').empty()){
           d3.select('.co2line').remove();
@@ -194,7 +194,7 @@
       };
     });
 
-    const temp_text = "As you can see, we're totally boned because of it."
+    const temp_text = "As a result of this insulator effect the global temperature continues to rise. This increase in temperature has detrimental effects on ocean acidity, polar ice volume, ocean levels, and ruins agricultural efforts around the world. We must take action soon before the consequences are dire."
     d3.select('#temp_btn').on('click', function(){
       if (!d3.select('.templine').empty()){
         d3.select('.templine').remove();
